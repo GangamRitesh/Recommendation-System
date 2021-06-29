@@ -3,10 +3,6 @@ argh==0.26.2
 arrow==0.13.1
 async-generator==1.10
 atomicwrites==1.4.0
-backports.weakref==1.0.post1
-conda==4.10.1
-conda-build==3.20.5
-conda-verify==3.4.2
 cycler==0.10.0
 Flask==1.1.2
 future==0.18.2
