@@ -29,10 +29,10 @@ print('Log: Loaded sentiment model')
 tfidf_vectorizer     = joblib.load('model/tfidf_vectorizer.pkl')
 print('Log: Loaded tfidf vectorizer model')
 items_pred = []
-df = pd.read_csv('cleaned.csv')
+df = pd.read_csv('cleaned_data.csv')
 print('Log: Loaded data')
 data = pd.DataFrame()
-data['reviews'] = (df.reviews_title +' '+ df.reviews_text).astype('str')
+data['reviews'] = df.reviews.astype('str')
 # preproces reviews
 # def remove_stopwords(text):
     
@@ -88,7 +88,10 @@ print('Log: Preprocessed data')
 def vectorizer(reviews_df):
     reviews =  [review for review in reviews_df.reviews]
     print('Before Vectorized shape',reviews_df.shape)
+    print('Before Vectorized shape',reviews_df)
     v = tfidf_vectorizer.transform(reviews)
+    print('v')
+    print(v)
     reviews_df = pd.DataFrame(v.toarray(), columns = tfidf_vectorizer.get_feature_names())
     print('After Vectorized shape',reviews_df.shape)
     reviews_df['name_'] = df['name']
@@ -97,7 +100,9 @@ def vectorizer(reviews_df):
 data = vectorizer(data)
 print('Log: Vectorized data')
 
+
 ratings = pd.read_csv('sample30.csv')
+print('Log: Building recommendation model')
 ratings = ratings[['name','reviews_username','reviews_rating']]
 ratings = ratings[~ratings.reviews_username.isna()]
 ratings = ratings.groupby(by = ['name','reviews_username']).mean()
@@ -107,7 +112,7 @@ df_pivot = ratings.pivot(index= 'user'
                         ,columns='item'
                         ,values='rating'
                         ).fillna(0)
-print('Log: Building pivot model')                        
+print('Log: Built pivot table')                       
 dummy_train = ratings.copy()                            
 dummy_train = dummy_train.pivot(index='user'
                                 ,columns='item'
@@ -116,6 +121,7 @@ dummy_train = dummy_train.pivot(index='user'
 mean = np.nanmean(df_pivot, axis=1)
 df_subtracted = (df_pivot.T-mean).T
 df_subtracted.fillna(0)
+print('Log: Built recommendation model') 
 
 def build_recommendation_model(username):
     print('Log: Building recommendation model')
