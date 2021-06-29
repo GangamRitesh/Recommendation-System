@@ -91,10 +91,10 @@ def vectorizer(reviews_df):
     print('Before Vectorized shape',reviews_df)
     v = tfidf_vectorizer.transform(reviews)
     print('v')
-    print(v)
+    # print(v)
     reviews_df = pd.DataFrame(v.toarray(), columns = tfidf_vectorizer.get_feature_names())
     print('After Vectorized shape',reviews_df.shape)
-    reviews_df['name_'] = df['name']
+    # reviews_df['name_'] = df['name']
     return reviews_df
 
 data = vectorizer(data)
