@@ -195,8 +195,8 @@ def index():
 
 @app.route('/favicon.ico', methods=['GET'])
 def index2():
-    return render_template('index.html',items_pred = [],showPred='N', showError='N')
-
+    # return render_template('index.html',items_pred = [],showPred='N', showError='N')
+    return send_from_directory("static", 'amazon.png')
 
 
 if __name__ == '__main__':
