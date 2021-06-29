@@ -19,9 +19,9 @@ app = Flask(__name__)
 
 # Load the model from the file
 # recommendation_model = joblib.load('model/recommendation_model.pkl')
-user_final_rating = joblib.load('model/user_final_rating.pkl')
+# user_final_rating = joblib.load('model/user_final_rating.pkl')
 
-print('Log: Loaded recommendation model')
+# print('Log: Loaded recommendation model')
 sentiment_model = XGBClassifier()
 sentiment_model.load_model('model/xgb_sentiment_model.json')
 print('Log: Loaded sentiment model')
@@ -63,31 +63,31 @@ def vectorizer(reviews_df):
 data = vectorizer(data)
 print('Log: Vectorized data')
 
-# print('Log: Building recommendation model')
-# ratings = pd.read_csv('sample30.csv')
-# ratings = ratings[['name','reviews_username','reviews_rating']]
-# ratings = ratings[~ratings.reviews_username.isna()]
-# ratings = ratings.groupby(by = ['name','reviews_username']).mean()
-# ratings.reset_index(inplace = True)
-# ratings.columns = ['item','user','rating']
-# df_pivot = ratings.pivot(index= 'user'
-#                         ,columns='item'
-#                         ,values='rating'
-#                         ).fillna(0)
-# print('Log: Building pivot model')                        
-# dummy_train = ratings.copy()                            
-# dummy_train = dummy_train.pivot(index='user'
-#                                 ,columns='item'
-#                                 ,values='rating'
-#                                 ).fillna(1)
-# mean = np.nanmean(df_pivot, axis=1)
-# df_subtracted = (df_pivot.T-mean).T
-# user_correlation = 1 - pairwise_distances(df_subtracted.fillna(0), metric='cosine')
-# user_correlation[np.isnan(user_correlation)] = 0
-# print('Log: Built similarity matrix') 
-# user_predicted_ratings = np.dot(user_correlation, df_pivot.fillna(0))
-# user_final_rating = np.multiply(user_predicted_ratings,dummy_train)
-# print('Log: Built recommendation model') 
+print('Log: Building recommendation model')
+ratings = pd.read_csv('sample30.csv')
+ratings = ratings[['name','reviews_username','reviews_rating']]
+ratings = ratings[~ratings.reviews_username.isna()]
+ratings = ratings.groupby(by = ['name','reviews_username']).mean()
+ratings.reset_index(inplace = True)
+ratings.columns = ['item','user','rating']
+df_pivot = ratings.pivot(index= 'user'
+                        ,columns='item'
+                        ,values='rating'
+                        ).fillna(0)
+print('Log: Building pivot model')                        
+dummy_train = ratings.copy()                            
+dummy_train = dummy_train.pivot(index='user'
+                                ,columns='item'
+                                ,values='rating'
+                                ).fillna(1)
+mean = np.nanmean(df_pivot, axis=1)
+df_subtracted = (df_pivot.T-mean).T
+user_correlation = 1 - pairwise_distances(df_subtracted.fillna(0), metric='cosine')
+user_correlation[np.isnan(user_correlation)] = 0
+print('Log: Built similarity matrix') 
+user_predicted_ratings = np.dot(user_correlation, df_pivot.fillna(0))
+user_final_rating = np.multiply(user_predicted_ratings,dummy_train)
+print('Log: Built recommendation model') 
 
 data['name_'] = df['name']
 def get_top_items_from_sentiment_analysis(top_20):
@@ -117,14 +117,14 @@ def predict():
     print(request)
     user = request.form['user']
     if not user or user not in list(user_final_rating.index):
-        return render_template('index2.html', items_pred = [],showPred= 'N', showError = 'Y')
+        return render_template('index.html', items_pred = [],showPred= 'N', showError = 'Y')
     
     # output = recommendation_model.loc[user].sort_values(ascending=False)[0:20]
     top_20 = get_top_items_from_recommendation_analysis(user)
     # print(top_20)
     top5 = list(get_top_items_from_sentiment_analysis(top_20))
 
-    return render_template('index2.html', items_pred = top5,showPred= 'Y', showError = 'N', user = user.title())
+    return render_template('index.html', items_pred = top5,showPred= 'Y', showError = 'N', user = user.title())
 
 
 @app.route('/', methods=['POST','GET'])
@@ -132,7 +132,7 @@ def index():
     if request.method == 'POST':
         return predict()
     else:
-        return render_template('index2.html',items_pred = [],showPred='N', showError='N')
+        return render_template('index.html',items_pred = [],showPred='N', showError='N')
 
 if __name__ == '__main__':
     app.debug = True
