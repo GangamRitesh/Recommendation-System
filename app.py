@@ -52,16 +52,13 @@ def preprocess_text(text):
     stems = [stemmer.stem(word) for word in text]
     text = " ".join(stems)
     return text   
-data.reviews = data.reviews.apply(lambda text: preprocess_text(text))
-print('Log: Preprocessed data')
+
 def vectorizer(reviews_df):
     reviews =  [review for review in reviews_df.reviews]
     v = tfidf_vectorizer.transform(reviews)
     reviews_df = pd.DataFrame(v.toarray(), columns = tfidf_vectorizer.get_feature_names())
     reviews_df['name_'] = df['name']
     return reviews_df
-data = vectorizer(data)
-print('Log: Vectorized data')
 
 print('Log: Building recommendation model')
 ratings = pd.read_csv('sample30.csv')
@@ -91,7 +88,13 @@ print('Log: Built recommendation model')
 
 data['name_'] = df['name']
 def get_top_items_from_sentiment_analysis(top_20):
+    data = data[data['name_'].isin(top_20)]
+    data.reviews = data.reviews.apply(lambda text: preprocess_text(text))
+    print('Log: Preprocessed data')
+    data = vectorizer(data)
+    print('Log: Vectorized data')
     top_items = pd.DataFrame(data[data['name_'].isin(top_20)])
+
     print(top_items.head())
     top_5 = pd.DataFrame(columns=['item','score'])
     for i in top_20:
