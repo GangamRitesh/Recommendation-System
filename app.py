@@ -29,12 +29,12 @@ print('Log: Loaded sentiment model')
 tfidf_vectorizer     = joblib.load('model/tfidf_vectorizer.pkl')
 print('Log: Loaded tfidf vectorizer model')
 items_pred = []
-df = pd.read_csv('sample30.csv')
+df = pd.read_csv('cleaned.csv')
 print('Log: Loaded data')
 data = pd.DataFrame()
 data['reviews'] = (df.reviews_title +' '+ df.reviews_text).astype('str')
 # preproces reviews
-def remove_stopwords(text):
+# def remove_stopwords(text):
     
     # # Convert text to lowercase
     # text = text.lower()
@@ -49,36 +49,36 @@ def remove_stopwords(text):
     # # remove stop words
     
     # stemmer= PorterStemmer()
-    text = [word for word in text if word not in stop_words]
+    # text = [word for word in text if word not in stop_words]
     # Setmming
     # stems = [stemmer.stem(word) for word in text]
     # text = " ".join(stems)
-    return text
-def stemming(text):
-    stems = [stemmer.stem(word) for word in text]
-    text = " ".join(stems)
-    return text
+    # return text
+# def stemming(text):
+#     stems = [stemmer.stem(word) for word in text]
+#     text = " ".join(stems)
+#     return text
 # lowercase
-data.reviews = data.reviews.str.lower()
-print('Log: Preprocessed data(Lowercase)')
+# data.reviews = data.reviews.str.lower()
+# print('Log: Preprocessed data(Lowercase)')
 
-# remove numbers, nextline 
-data.reviews = [re.sub(r'[\n\r\d]*','', str(x)) for x in data.reviews]
-print('Log: Preprocessed data(numbers)')
-# remove punctuations
-punctuations = string.punctuation
-data.reviews = data['reviews'].replace(punctuations,'')
-print('Log: Preprocessed data(Punctuations)')
-# Tokenize
-data.reviews = [word_tokenize(x) for x in data.reviews]
-print('Log: Preprocessed data(tokenized)')
-# remove stopwords
-stop_words = stopwords.words('english')
-data.reviews = data['reviews'].apply(lambda x: remove_stopwords(x))
-print('Log: Preprocessed data(Stopwords)')
-stemmer= PorterStemmer()
-data.reviews = data['reviews'].apply(lambda x: stemming(x))
-print('Log: Preprocessed data(stemming)')
+# # remove numbers, nextline 
+# data.reviews = [re.sub(r'[\n\r\d]*','', str(x)) for x in data.reviews]
+# print('Log: Preprocessed data(numbers)')
+# # remove punctuations
+# punctuations = string.punctuation
+# data.reviews = data['reviews'].replace(punctuations,'')
+# print('Log: Preprocessed data(Punctuations)')
+# # Tokenize
+# data.reviews = [word_tokenize(x) for x in data.reviews]
+# print('Log: Preprocessed data(tokenized)')
+# # remove stopwords
+# stop_words = stopwords.words('english')
+# data.reviews = data['reviews'].apply(lambda x: remove_stopwords(x))
+# print('Log: Preprocessed data(Stopwords)')
+# stemmer= PorterStemmer()
+# data.reviews = data['reviews'].apply(lambda x: stemming(x))
+# print('Log: Preprocessed data(stemming)')
 
 
 
