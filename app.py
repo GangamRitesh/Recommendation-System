@@ -193,6 +193,12 @@ def index():
     else:
         return render_template('index.html',items_pred = [],showPred='N', showError='N')
 
+@app.route('/favicon.ico', methods=['GET'])
+def index2():
+    return render_template('index.html',items_pred = [],showPred='N', showError='N')
+
+
+
 if __name__ == '__main__':
     app.debug = True
     app.run()
