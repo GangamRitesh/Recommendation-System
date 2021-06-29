@@ -34,27 +34,55 @@ print('Log: Loaded data')
 data = pd.DataFrame()
 data['reviews'] = (df.reviews_title +' '+ df.reviews_text).astype('str')
 # preproces reviews
-def preprocess_text(text):
+def remove_stopwords(text):
     
-    # Convert text to lowercase
-    text = text.lower()
-    # remove numbers 
-    text = re.sub(r'\d+', '', text)
-    # remove punctuation
-    text = "".join([char for char in text if char not in string.punctuation])
-    # Remove stopwords
-    stop_words = stopwords.words('english')
-    # tokenize into words
-    text = word_tokenize(text)
-    # remove stop words
+    # # Convert text to lowercase
+    # text = text.lower()
+    # # remove numbers 
+    # text = re.sub(r'\d+', '', text)
+    # # remove punctuation
+    # text = "".join([char for char in text if char not in string.punctuation])
+    # # Remove stopwords
+    # stop_words = stopwords.words('english')
+    # # tokenize into words
+    # text = word_tokenize(text)
+    # # remove stop words
+    
+    # stemmer= PorterStemmer()
     text = [word for word in text if word not in stop_words]
     # Setmming
-    stemmer= PorterStemmer()
+    # stems = [stemmer.stem(word) for word in text]
+    # text = " ".join(stems)
+    return text
+def stemming(text):
     stems = [stemmer.stem(word) for word in text]
     text = " ".join(stems)
     return text
+# lowercase
+data.reviews = data.reviews.str.lower()
+print('Log: Preprocessed data(Lowercase)')
 
-data.reviews = data.reviews.apply(lambda text: preprocess_text(text))
+# remove numbers, nextline 
+data.reviews = [re.sub(r'[\n\r\d]*','', str(x)) for x in data.reviews]
+print('Log: Preprocessed data(numbers)')
+# remove punctuations
+punctuations = string.punctuation
+data.reviews = data['reviews'].replace(punctuations,'')
+print('Log: Preprocessed data(Punctuations)')
+# Tokenize
+data.reviews = [word_tokenize(x) for x in data.reviews]
+print('Log: Preprocessed data(tokenized)')
+# remove stopwords
+stop_words = stopwords.words('english')
+data.reviews = data['reviews'].apply(lambda x: remove_stopwords(x))
+print('Log: Preprocessed data(Stopwords)')
+stemmer= PorterStemmer()
+data.reviews = data['reviews'].apply(lambda x: stemming(x))
+print('Log: Preprocessed data(stemming)')
+
+
+
+# data.reviews = data.reviews.apply(lambda text: preprocess_text(text))
 print('Log: Preprocessed data')
 
 def vectorizer(reviews_df):
