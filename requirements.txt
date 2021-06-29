@@ -7,7 +7,6 @@ backports.weakref==1.0.post1
 black==19.10b0
 brotlipy==0.7.0
 cachetools==4.2.2
-certifi==2020.12.5
 clyent==1.2.2
 conda==4.10.1
 conda-build==3.20.5
