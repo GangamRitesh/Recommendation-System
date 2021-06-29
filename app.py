@@ -235,7 +235,7 @@ def index2():
 
 if __name__ == '__main__':
     app.debug = True
-    app.run()
+    app.run(use_reloader=False)
 
 @app.route("/static/<path:path>", methods=['GET'])
 def static_dir(path):
