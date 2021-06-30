@@ -55,17 +55,17 @@
       <div class="row justify-content-md-center " >
         
         <ul class="list-group">
-          <li class="list-group-item active"> Top 5 recommendation for user: <h4><b>{{user}} </b></h4> </li>
+          <li class="list-group-item active"> Top 5 recommendation for user: <h6><b>{{user}} </b></h6> </li>
           
-            <!-- {%for n in range(0,5)%}
+            {%for n in range(0,5)%}
 
               <li class="list-group-item">{{ items_pred[n] }}</li>
-            {%endfor%} -->
+            {%endfor%}
         </ul>
         </div>
         <br>
 
-        <div class="row justify-content-md-center " >
+        <!-- <div class="row justify-content-md-center " >
         {%for n in range(0,5)%}
         <div class="card-group" style="height: 18rem;">
           <div class="col">
@@ -80,7 +80,7 @@
             </div>
           </div>
         </div>
-        {%endfor%}
+        {%endfor%} -->
         
       </div> 
       {% endif %}
