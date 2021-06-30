@@ -1,6 +1,7 @@
 # import Flask class from the flask module
 from flask import Flask, request, jsonify, render_template, send_from_directory
 import joblib
+import os
 import numpy as np
 import pandas as pd
 import regex as re
@@ -94,7 +95,7 @@ def vectorizer(reviews_df):
     # print('v')
     # print(v)
     reviews_df = pd.DataFrame(v.toarray(), columns = tfidf_vectorizer.get_feature_names())
-    print('After Vectorized shape',reviews_df.shape)
+    # print('After Vectorized shape',reviews_df.shape)
     reviews_df['name_'] = ratings['name']
     # del(name)
     del(v)
@@ -124,10 +125,10 @@ dummy_train = dummy_train.pivot(index='user'
 mean = np.nanmean(df_pivot, axis=1)
 df_subtracted = (df_pivot.T-mean).T
 df_subtracted.fillna(0)
-print('df_pivot.memory_usage',df_pivot.memory_usage())
-print('dummy_train.memory_usage',dummy_train.memory_usage())
-print('df_subtracted.memory_usage',df_subtracted.memory_usage())
-print('Log: Built recommendation model') 
+# print('df_pivot.memory_usage',df_pivot.memory_usage())
+# print('dummy_train.memory_usage',dummy_train.memory_usage())
+# print('df_subtracted.memory_usage',df_subtracted.memory_usage())
+# print('Log: Built recommendation model') 
 
 def build_recommendation_model(username):
     print('Log: Building recommendation model')
@@ -227,7 +228,7 @@ def predict():
     # output = recommendation_model.loc[user].sort_values(ascending=False)[0:20]
     top_20 = build_recommendation_model(user)
     print('top_20')
-    print(top_20)
+    # print(top_20)
     top5 = list(get_top_items_from_sentiment_analysis(top_20))
 
     return render_template('index.html', items_pred = top5,showPred= 'Y', showError = 'N', user = user.title())
@@ -243,12 +244,14 @@ def index():
 @app.route('/favicon.ico', methods=['GET'])
 def index2():
     # return render_template('index.html',items_pred = [],showPred='N', showError='N')
-    return "Hello World!"
+    return jsonify("<p>Hello World!</p>")
 
 
 if __name__ == '__main__':
     app.debug = True
-    app.run(use_reloader=False)
+    # app.run(use_reloader=False)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host='0.0.0.0', port=port,use_reloader=False)
 
 @app.route("/static/<path:path>", methods=['GET'])
 def static_dir(path):
