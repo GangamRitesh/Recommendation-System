@@ -11,7 +11,7 @@ from nltk.tokenize import word_tokenize
 nltk.download('stopwords')
 from nltk.corpus import stopwords
 from nltk.stem import PorterStemmer
-from sklearn.metrics.pairwise import pairwise_distances
+# from sklearn.metrics.pairwise import pairwise_distances
 from scipy import spatial
 from xgboost import XGBClassifier
 
@@ -29,10 +29,10 @@ print('Log: Loaded sentiment model')
 tfidf_vectorizer     = joblib.load('model/tfidf_vectorizer.pkl')
 print('Log: Loaded tfidf vectorizer model')
 items_pred = []
-df = pd.read_csv('cleaned_data.csv')
+ratings = pd.read_csv('cleaned_data.csv')
 print('Log: Loaded data')
 data = pd.DataFrame()
-data['reviews'] = df.reviews.astype('str')
+data['reviews'] = ratings.reviews.astype('str')
 # preproces reviews
 # def remove_stopwords(text):
     
@@ -87,23 +87,26 @@ print('Log: Preprocessed data')
 
 def vectorizer(reviews_df):
     reviews =  [review for review in reviews_df.reviews]
+    # name = reviews_df['name']
     print('Before Vectorized shape',reviews_df.shape)
     print('Before Vectorized shape',reviews_df)
     v = tfidf_vectorizer.transform(reviews)
-    print('v')
+    # print('v')
     # print(v)
     reviews_df = pd.DataFrame(v.toarray(), columns = tfidf_vectorizer.get_feature_names())
     print('After Vectorized shape',reviews_df.shape)
-    # reviews_df['name_'] = df['name']
+    reviews_df['name_'] = ratings['name']
+    # del(name)
+    del(v)
     return reviews_df
 
 data = vectorizer(data)
 print('Log: Vectorized data')
 
 
-ratings = pd.read_csv('sample30.csv')
+# ratings = pd.read_csv('sample30.csv')
 print('Log: Building recommendation model')
-ratings = ratings[['name','reviews_username','reviews_rating']]
+ratings = ratings[['name','reviews_username','ratings']]
 ratings = ratings[~ratings.reviews_username.isna()]
 ratings = ratings.groupby(by = ['name','reviews_username']).mean()
 ratings.reset_index(inplace = True)
@@ -121,6 +124,9 @@ dummy_train = dummy_train.pivot(index='user'
 mean = np.nanmean(df_pivot, axis=1)
 df_subtracted = (df_pivot.T-mean).T
 df_subtracted.fillna(0)
+print('df_pivot.memory_usage',df_pivot.memory_usage())
+print('dummy_train.memory_usage',dummy_train.memory_usage())
+print('df_subtracted.memory_usage',df_subtracted.memory_usage())
 print('Log: Built recommendation model') 
 
 def build_recommendation_model(username):
@@ -135,28 +141,34 @@ def build_recommendation_model(username):
     user_correlation_df = pd.DataFrame(user_correlation,columns=['sim'])
     user_predicted_ratings = np.dot(user_correlation_df.T, df_pivot.fillna(0))    
     user_final_rating = np.multiply(user_predicted_ratings,dummy_train)
+    del(user_correlation_df,user_correlation)
     # user_correlation = 1 - pairwise_distances(df_subtracted.fillna(0), metric='cosine')
     # user_correlation[np.isnan(user_correlation)] = 0
     # print('Log: Built similarity matrix') 
     # user_predicted_ratings = np.dot(user_correlation, df_pivot.fillna(0))
     # user_final_rating = np.multiply(user_predicted_ratings,dummy_train)
     # print('Log: Built recommendation model') 
-    return user_final_rating
-data['name_'] = df['name']
+    return user_final_rating.loc[username].sort_values(ascending=False)[0:20].index.values
 def get_top_items_from_sentiment_analysis(top_20):
     top_items = pd.DataFrame(data[data['name_'].isin(top_20)])
+    print(data['name_'])
+    print('data shape', data.shape)
+    print('top items shape', top_items.shape)
     print(top_items.head())
     top_5 = pd.DataFrame(columns=['item','score'])
     for i in top_20:
-        item = top_items[top_items.name_==i]
+        item = data[data.name_==i]
         item.drop(columns = ['name_'],axis =1,inplace = True)
+        print('i count: ',item.shape)
         print('------item------')
         score_array = sentiment_model.predict(item)
         score = sum(score_array)/len(score_array)
         print(i,score,len(score_array))
         top_5.loc[len(top_5)] = [i,score]
+        del(item,score,score_array)
     top_5 = top_5.sort_values(by='score',ascending=False)
-    print(top_5)
+    # del(top_items)
+    # print(top_5)
     return top_5['item'].values
 # data['name_'] = df['name']
 # def get_top_items_from_sentiment_analysis(top_20):
@@ -198,12 +210,12 @@ def get_top_items_from_sentiment_analysis(top_20):
 #     print(top_5)
 #     return top_5['item'].values
 
-def get_top_items_from_recommendation_analysis(username):
-    user_final_rating = build_recommendation_model(username)
-    op = user_final_rating.loc[username].sort_values(ascending=False)[0:20]
-    for i,j in zip(op.index.values,op):
-        print(str(i)+' :',op[i])
-    return list(op.index.values)
+# def get_top_items_from_recommendation_analysis(username):
+#     user_final_rating = build_recommendation_model(username)
+#     op = user_final_rating.loc[username].sort_values(ascending=False)[0:20]
+#     for i,j in zip(op.index.values,op):
+#         print(str(i)+' :',op[i])
+#     return list(op.index.values)
 
 @app.route('/predict', methods=['POST'])
 def predict():
@@ -213,8 +225,9 @@ def predict():
         return render_template('index.html', items_pred = [],showPred= 'N', showError = 'Y')
     
     # output = recommendation_model.loc[user].sort_values(ascending=False)[0:20]
-    top_20 = get_top_items_from_recommendation_analysis(user)
-    # print(top_20)
+    top_20 = build_recommendation_model(user)
+    print('top_20')
+    print(top_20)
     top5 = list(get_top_items_from_sentiment_analysis(top_20))
 
     return render_template('index.html', items_pred = top5,showPred= 'Y', showError = 'N', user = user.title())
