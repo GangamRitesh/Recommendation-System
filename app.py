@@ -129,11 +129,10 @@ def index2():
 
 
 if __name__ == '__main__':
-    app.debug = True
+    app.debug = False
     # app.run(use_reloader=False)
-    build_recommendation_model()
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host='0.0.0.0', port=port,use_reloader=False)
+    # port = int(os.environ.get("PORT", 5000))
+    app.run(use_reloader=False)
 
 @app.route("/static/<path:path>", methods=['GET'])
 def static_dir(path):
