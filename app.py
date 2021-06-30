@@ -6,12 +6,12 @@ import numpy as np
 import pandas as pd
 import regex as re
 import string
-import nltk
-nltk.download('punkt')
-from nltk.tokenize import word_tokenize
-nltk.download('stopwords')
-from nltk.corpus import stopwords
-from nltk.stem import PorterStemmer
+# import nltk
+# nltk.download('punkt')
+# from nltk.tokenize import word_tokenize
+# nltk.download('stopwords')
+# from nltk.corpus import stopwords
+# from nltk.stem import PorterStemmer
 from sklearn.metrics.pairwise import pairwise_distances
 from scipy import spatial
 from xgboost import XGBClassifier
