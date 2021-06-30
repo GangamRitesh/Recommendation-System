@@ -61,7 +61,7 @@ print('Log: Built recommendation model')
 print('Log: Building sentiment model') 
 def vectorizer(i):
     print(i)
-    print(processed_data[processed_data['items']==i])
+    # print(processed_data[processed_data['items']==i])
     reviews_df = pd.DataFrame(processed_data[processed_data['items']==i])
     reviews =  [review for review in reviews_df.reviews]
     v = tfidf_vectorizer.transform(reviews)
@@ -98,18 +98,19 @@ def get_top_items_from_sentiment_analysis(top_20):
         print(i,score,len(score_array))
         top_5.loc[len(top_5)] = [i,score]
         del(item,score,score_array)
-    top_5 = top_5.sort_values(by='score',ascending=False)
+    top_5 = top_5.sort_values(by='score',ascending=False)[0:5]
     return top_5['item'].values
 
 @app.route('/predict', methods=['POST'])
 def predict():
     user = request.form['user']
+    user = user.lower()
     if not user or user not in list(ratings.users):
         return render_template('index.html', items_pred = [],showPred= 'N', showError = 'Y')
     top_20 = item_final_rating.loc[user].sort_values(ascending=False)[0:20].index.values
     print(top_20)
     top5 = list(get_top_items_from_sentiment_analysis(top_20))
-
+    
     return render_template('index.html', items_pred = top5,showPred= 'Y', showError = 'N', user = user.title())
 
 
@@ -118,7 +119,7 @@ def index():
     if request.method == 'POST':
         return predict()
     else:
-        return render_template('index.html',items_pred = [],showPred='N', showError='N')
+        return render_template('index.html',items_pred = [],stars=[],showPred='N', showError='N')
 
 @app.route('/favicon.ico', methods=['GET'])
 def index2():

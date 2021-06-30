@@ -15,7 +15,7 @@
     <div class="container" >
       <!-- Content here -->
       <br>
-      <div class="row justify-content-md-center ">
+      <div class="justify-content-md-center mx-auto" style="width: 35%;min-width:7cm;">
         <div class="card text-center">
           <div class="card-header bg-primary text-white">
             <strong>Sentiment Based Product Recommendation System</strong>
@@ -33,29 +33,23 @@
               <br>
               <button type="submit" class="btn btn-outline-primary ">Submit</button>
 
-              {% if showError == 'Y' %}
-              <br>
-              <br>
-                  <div class="alert alert-danger" role="alert">
-                    Enter valid username
-                  </div>
-                <!-- <div class="bg-danger text-white"> Enter valid username </div> -->
-
-              {% endif %}
+              
             </form>
           </div>
           
         </div>
       </div>
       <br>
-      
-      <div class="row justify-content-md-center " >
-        
-
+      {% if showError == 'Y' %}
+      <div class="justify-content-md-center mx-auto" style="width: 20%;min-width:7cm;">
+        <div class="alert alert-danger mx-auto" role="alert">
+                    Enter valid username
+        </div>
       </div>
+      {% endif %}
       
       {% if showPred == 'Y' %}
-      <div class="row justify-content-md-center " >
+      <div class="justify-content-md-center mx-auto"style="width: 45%;min-width:7cm;" >
         
         <ul class="list-group">
           <li class="list-group-item active"> Top 5 recommendation for user: <strong>{{user}} </strong></h6> </li>
@@ -65,9 +59,9 @@
               <li class="list-group-item">{{ items_pred[n] }}</li>
             {%endfor%}
         </ul>
-        </div>
+      </div>
         <br>
-
+        
         <!-- <div class="row justify-content-md-center " >
         {%for n in range(0,5)%}
         <div class="card-group" style="height: 18rem;">
