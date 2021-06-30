@@ -17,7 +17,7 @@
       <br>
       <div class="row justify-content-md-center ">
         <div class="card text-center">
-          <div class="card-header">
+          <div class="card-header bg-primary text-white">
             <strong>Sentiment Based Product Recommendation System</strong>
           </div>
           <div class="card-body">
@@ -28,15 +28,18 @@
             <form  method="POST" enctype="multipart/form-data">
               <!-- <div class="form-group"> -->
                 <label for="user"><strong>Enter username</strong> </label>
-                <input type="user" class="form-control" name= "user" id="user" placeholder="Username">
+                <input type="user" class="form-control" name= "user" id="user" placeholder="Username"required>
                
               <br>
-              <button type="submit" class="btn btn-primary ">Submit</button>
+              <button type="submit" class="btn btn-outline-primary ">Submit</button>
 
               {% if showError == 'Y' %}
               <br>
               <br>
-                <div class="bg-danger text-white"> Enter valid username </div>
+                  <div class="alert alert-danger" role="alert">
+                    Enter valid username
+                  </div>
+                <!-- <div class="bg-danger text-white"> Enter valid username </div> -->
 
               {% endif %}
             </form>
@@ -55,7 +58,7 @@
       <div class="row justify-content-md-center " >
         
         <ul class="list-group">
-          <li class="list-group-item active"> Top 5 recommendation for user: <h6><b>{{user}} </b></h6> </li>
+          <li class="list-group-item active"> Top 5 recommendation for user: <strong>{{user}} </strong></h6> </li>
           
             {%for n in range(0,5)%}
 
