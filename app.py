@@ -28,49 +28,49 @@ items_pred = []
 processed_data = joblib.load('data/processed_data.pkl')
 print('Log: Loaded data')
 data = pd.DataFrame()
-data['reviews'] = processed_data.reviews.astype('str')
+# data['reviews'] = processed_data.reviews.astype('str')
 
-print('Log: Building recommendation model')
-ratings = processed_data[['items','users','ratings']]
-ratings = ratings[~ratings.users.isna()]
-ratings = ratings.groupby(by = ['items','users']).mean()
-ratings.reset_index(inplace = True)
-df_pivot = ratings.pivot(index= 'users'
-                        ,columns='items'
-                        ,values='ratings'
-                        ).T
-print('Log: Building pivot model')                        
-dummy_train = ratings.copy()                            
-dummy_train = dummy_train.pivot(index='users'
-                                ,columns='items'
-                                ,values='ratings'
-                                ).fillna(1)
-mean = np.nanmean(df_pivot, axis=1)
-df_subtracted = (df_pivot.T-mean).T
-item_correlation = 1 - pairwise_distances(df_subtracted.fillna(0), metric='cosine')
-item_correlation[np.isnan(item_correlation)] = 0
-item_correlation[item_correlation<0]=0
-print(item_correlation)
-print('Log: Built similarity matrix') 
-item_predicted_ratings = np.dot((df_pivot.fillna(0).T),item_correlation)
-item_final_rating = np.multiply(item_predicted_ratings,dummy_train)
-print('built item_final_rating')
-# user_final_rating = np.multiply(user_predicted_ratings,dummy_train)
-print('Log: Built recommendation model') 
-print('Log: Building sentiment model') 
-def vectorizer(reviews_df):
-    reviews =  [review for review in reviews_df.reviews]
-    v = tfidf_vectorizer.transform(reviews)
-    reviews_df = pd.DataFrame(v.toarray(), columns = tfidf_vectorizer.get_feature_names())
-    # reviews_df['name_'] = processed_data['items']
-    del(v)
-    return reviews_df
+# print('Log: Building recommendation model')
+# ratings = processed_data[['items','users','ratings']]
+# ratings = ratings[~ratings.users.isna()]
+# ratings = ratings.groupby(by = ['items','users']).mean()
+# ratings.reset_index(inplace = True)
+# df_pivot = ratings.pivot(index= 'users'
+#                         ,columns='items'
+#                         ,values='ratings'
+#                         ).T
+# print('Log: Building pivot model')                        
+# dummy_train = ratings.copy()                            
+# dummy_train = dummy_train.pivot(index='users'
+#                                 ,columns='items'
+#                                 ,values='ratings'
+#                                 ).fillna(1)
+# mean = np.nanmean(df_pivot, axis=1)
+# df_subtracted = (df_pivot.T-mean).T
+# item_correlation = 1 - pairwise_distances(df_subtracted.fillna(0), metric='cosine')
+# item_correlation[np.isnan(item_correlation)] = 0
+# item_correlation[item_correlation<0]=0
+# print(item_correlation)
+# print('Log: Built similarity matrix') 
+# item_predicted_ratings = np.dot((df_pivot.fillna(0).T),item_correlation)
+# item_final_rating = np.multiply(item_predicted_ratings,dummy_train)
+# print('built item_final_rating')
+# # user_final_rating = np.multiply(user_predicted_ratings,dummy_train)
+# print('Log: Built recommendation model') 
+# print('Log: Building sentiment model') 
+# def vectorizer(reviews_df):
+#     reviews =  [review for review in reviews_df.reviews]
+#     v = tfidf_vectorizer.transform(reviews)
+#     reviews_df = pd.DataFrame(v.toarray(), columns = tfidf_vectorizer.get_feature_names())
+#     # reviews_df['name_'] = processed_data['items']
+#     del(v)
+#     return reviews_df
 
-data = pd.DataFrame()
-data['reviews'] = processed_data.reviews.astype('str')
-data = vectorizer(data)
-data['items_'] = processed_data['items']
-print('Log: Vectorixed data')
+# data = pd.DataFrame()
+# data['reviews'] = processed_data.reviews.astype('str')
+# data = vectorizer(data)
+# data['items_'] = processed_data['items']
+# print('Log: Vectorixed data')
 
 
 # def get_top_items_from_recom_model(username):
