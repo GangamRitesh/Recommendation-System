@@ -6,12 +6,6 @@ import numpy as np
 import pandas as pd
 import regex as re
 import string
-# import nltk
-# nltk.download('punkt')
-# from nltk.tokenize import word_tokenize
-# nltk.download('stopwords')
-# from nltk.corpus import stopwords
-# from nltk.stem import PorterStemmer
 from sklearn.metrics.pairwise import pairwise_distances
 from scipy import spatial
 from xgboost import XGBClassifier
@@ -20,15 +14,14 @@ from xgboost import XGBClassifier
 app = Flask(__name__)
 
 sentiment_model = XGBClassifier()
-sentiment_model.load_model('model/xgb_sentiment_model.json')
+sentiment_model.load_model('xgb_sentiment_model.pkl')
 print('Log: Loaded sentiment model')
-tfidf_vectorizer     = joblib.load('model/tfidf_vectorizer.pkl')
+tfidf_vectorizer     = joblib.load('tfidf_vectorizer.pkl')
 print('Log: Loaded tfidf vectorizer model')
 items_pred = []
-processed_data = joblib.load('data/processed_data.pkl')
+processed_data = joblib.load('processed_data.pkl')
 print('Log: Loaded data')
 data = pd.DataFrame()
-# data['reviews'] = processed_data.reviews.astype('str')
 
 print('Log: Building recommendation model')
 ratings = processed_data[['items','users','ratings']]
@@ -55,7 +48,6 @@ print('Log: Built similarity matrix')
 item_predicted_ratings = np.dot((df_pivot.fillna(0).T),item_correlation)
 item_final_rating = np.multiply(item_predicted_ratings,dummy_train)
 print('built item_final_rating')
-# user_final_rating = np.multiply(user_predicted_ratings,dummy_train)
 print('Log: Built recommendation model') 
 
 print('Log: Building sentiment model') 
@@ -66,30 +58,10 @@ def vectorizer(i):
     reviews =  [review for review in reviews_df.reviews]
     v = tfidf_vectorizer.transform(reviews)
     reviews_df = pd.DataFrame(v.toarray(), columns = tfidf_vectorizer.get_feature_names())
-    # reviews_df['name_'] = processed_data['items']
     del(v)
     return reviews_df
 
-
-# def get_top_items_from_recom_model(username):
-#     user_correlation = []
-#     for i in df_subtracted.index:
-#       user_correlation.append( 1 - spatial.distance.cosine(df_subtracted.loc[i]
-#                                                                  ,df_subtracted.loc[username]))
-#     user_correlation = [i if i>0 else 0 for i in user_correlation ]
-#     print('Log: Built similarity matrix')
-#     user_correlation_df = pd.DataFrame(user_correlation,columns=['sim'])
-#     user_predicted_ratings = np.dot(user_correlation_df.T, df_pivot.fillna(0))    
-#     user_final_rating = np.multiply(user_predicted_ratings,dummy_train)
-#     del(user_correlation_df,user_correlation) 
-#     return user_final_rating.loc[username].sort_values(ascending=False)[0:20].index.values
-
 def get_top_items_from_sentiment_analysis(top_20):
-    # data=pd.DataFrame()
-    # data['reviews'] = processed_data[processed_data['items'].isin(top_20)].reviews.astype('str')
-    # data = vectorizer(data)
-    # data['items_'] = processed_data[processed_data['items'].isin(top_20)].items
-    # print('data shape', data.shape)
     top_5 = pd.DataFrame(columns=['item','score'])
     for i in top_20:
         item = vectorizer(i)
@@ -123,14 +95,11 @@ def index():
 
 @app.route('/favicon.ico', methods=['GET'])
 def index2():
-    # return render_template('index.html',items_pred = [],showPred='N', showError='N')
     return jsonify("<p>Hello World!</p>")
 
 
 if __name__ == '__main__':
     app.debug = False
-    # app.run(use_reloader=False)
-    # port = int(os.environ.get("PORT", 5000))
     app.run(use_reloader=False)
 
 @app.route("/static/<path:path>", methods=['GET'])
