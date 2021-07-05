@@ -14,8 +14,7 @@
   <body class='bg-secondary '>
     <div class="container" >
       <!-- Content here -->
-      <br>
-      <div class="justify-content-md-center mx-auto" style="width: 35%;min-width:7cm;">
+      <div class="justify-content-md-center mx-auto" style="width: 40%;min-width:7cm;padding: 0.3cm;">
         <div class="card text-center">
           <div class="card-header bg-primary text-white">
             <strong>Sentiment Based Product Recommendation System</strong>
@@ -39,20 +38,22 @@
           
         </div>
       </div>
-      <br>
+      
       {% if showError == 'Y' %}
       <div class="justify-content-md-center mx-auto" style="width: 20%;min-width:7cm;">
-        <div class="alert alert-danger mx-auto" role="alert">
-                    Enter valid username
-        </div>
+        <div class="alert alert-danger mx-auto" 
+             role="alert" 
+             style="text-align: center;font-weight: 600;">
+             Enter valid username
+          </div>
       </div>
       {% endif %}
       
       {% if showPred == 'Y' %}
-      <div class="justify-content-md-center mx-auto"style="width: 45%;min-width:7cm;" >
+      <div class="justify-content-md-center mx-auto"style="width: 40%;min-width:7cm;" >
         
         <ul class="list-group">
-          <li class="list-group-item active"> Top 5 recommendation for user: <strong>{{user}} </strong></h6> </li>
+          <li class="list-group-item active" style="text-align: center;"> Top 5 recommendation for user: <strong style="font-size: large;">{{user}} </strong></h6> </li>
           
             {%for n in range(0,5)%}
 
